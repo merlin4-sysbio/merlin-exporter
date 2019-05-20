@@ -19,8 +19,8 @@ import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.workbench.Workbench;
 
-import pt.uminho.ceb.biosystems.merlin.core.datatypes.Project;
-import pt.uminho.ceb.biosystems.merlin.core.utilities.LoadFromConf;
+import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
+import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 
@@ -35,7 +35,7 @@ public class BackupDatabase {
 	private String databaseName;
 	private String initialPath;
 	private String name = "";
-	private Project project = null;
+	private WorkspaceAIB project = null;
 	private File directory;
 	private long taxID;
 	private Boolean validCredentials = true;
@@ -43,14 +43,14 @@ public class BackupDatabase {
 	final static Logger logger = LoggerFactory.getLogger(BackupDatabase.class);
 
 	@Port(direction=Direction.INPUT, name="Select Workspace", validateMethod = "checkProject", order=1)
-	public void setProject(Project project) {
+	public void setProject(WorkspaceAIB project) {
 	
 	}
 
 	/**
 	 * @param project
 	 */
-	public void checkProject(Project project) {
+	public void checkProject(WorkspaceAIB project) {
 
 		if(project==null) {
 

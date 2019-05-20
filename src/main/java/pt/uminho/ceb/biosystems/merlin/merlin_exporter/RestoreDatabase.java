@@ -3,7 +3,6 @@ package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,11 +15,10 @@ import es.uvigo.ei.aibench.core.operation.annotation.Direction;
 import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.workbench.Workbench;
-
-import pt.uminho.ceb.biosystems.merlin.core.datatypes.Project;
-import pt.uminho.ceb.biosystems.merlin.core.utilities.LoadFromConf;
-import pt.uminho.ceb.biosystems.merlin.core.utilities.MerlinUtils;
-import pt.uminho.ceb.biosystems.merlin.core.utilities.Update;
+import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
+import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
+import pt.uminho.ceb.biosystems.merlin.aibench.utilities.MerlinUtils;
+import pt.uminho.ceb.biosystems.merlin.aibench.utilities.Update;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.Connection;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseAccess;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseSchemas;
@@ -44,21 +42,16 @@ public class RestoreDatabase {
 	private String importWS;
 	private Boolean success = true;
 	private String taxId;
-	private Project project;
+	private WorkspaceAIB project;
 	private String destWorkspaceName;
 	private Connection connection;
 	final static Logger logger = LoggerFactory.getLogger(RestoreDatabase.class);
 	
 	@Port(name="workspace:",description="select workspace",direction=Direction.INPUT,order=1)
-	public void setProject(Project project){
+	public void setProject(WorkspaceAIB project){
 		this.project = project;
 		
-		try {
-			this.connection = new Connection(project.getDatabase().getDatabaseAccess());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.connection = new Connection(project.getDatabase().getDatabaseAccess());
        
 		destWorkspaceName = this.project.getName();
 	}
