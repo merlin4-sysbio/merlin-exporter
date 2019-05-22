@@ -1,10 +1,6 @@
 package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,7 +14,6 @@ import es.uvigo.ei.aibench.core.operation.annotation.Direction;
 import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.workbench.Workbench;
-
 import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
