@@ -18,7 +18,6 @@ import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.MerlinUtils;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.Update;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.Connection;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseAccess;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseSchemas;
@@ -220,7 +219,6 @@ public class RestoreDatabase {
 				
 				MerlinUtils.updateAllViews(destWorkspaceName);
 
-				Update.checkForUpdates(destWorkspaceName, taxonomyID, false ,statement);
 			}
 			else {				
 				Workbench.getInstance().error("There was an error when trying to format "+ destWorkspaceName +"!!");
