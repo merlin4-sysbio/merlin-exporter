@@ -3,7 +3,6 @@ package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -18,9 +17,7 @@ import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.MerlinUtils;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.Update;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.Connection;
-import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseAccess;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseSchemas;
 import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.Enumerators.DatabaseType;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
@@ -35,13 +32,11 @@ public class RestoreDatabase {
 	private String databaseType;
 	private String zipPath;
 	private String exportDbType;
-	private String fileName;
 	private String unzippedPath;
 	private String fileDate;
 	private String workspaceName;
 	private String importWS;
 	private Boolean success = true;
-	private String taxId;
 	private WorkspaceAIB project;
 	private String destWorkspaceName;
 	private Connection connection;
@@ -127,61 +122,6 @@ public class RestoreDatabase {
 
 	}
 
-//	private void importMySQLToH2() throws Exception {
-//		Map<String, String> credentials = LoadFromConf.loadDatabaseCredentials(FileUtils.getConfFolderPath());
-//		String username = null, password = null, host = null, port = null;
-//		
-//		DatabaseType dbType = DatabaseType.H2;
-//		if (credentials.get("dbtype").equals("mysql"))
-//			dbType = DatabaseType.MYSQL;
-//		
-//		username = credentials.get("username");
-//		password = credentials.get("password");
-//		if (dbType.equals(DatabaseType.MYSQL)) {
-//			host = credentials.get("host");
-//			port = credentials.get("port");
-//		}
-//		
-//		long startTime = System.currentTimeMillis();
-//		
-//		DatabaseSchemas schemas = new DatabaseSchemas(username, password, host, port, dbType);
-//
-//		String filePath=importWS+"backupSQL_H2.sql";
-//		
-//		try {
-//			logger.info("Starting to import from (MySQL) " + workspaceName + " to (H2) " + destWorkspaceName + " database...");
-//			long taxonomyID = Long.parseLong(taxId);
-//
-//			DatabaseAccess dbAccess = this.project.getDatabase().getDatabaseAccess();
-//			
-//			Connection connection = new Connection(dbAccess);
-//			Statement statement = connection.createStatement();
-//			
-//			statement.executeUpdate("DROP ALL OBJECTS");
-//
-//			if(schemas.cleanSchema(destWorkspaceName, filePath)) {
-//				
-//				MerlinUtils.updateAllViews(destWorkspaceName);
-//
-//				Update.checkForUpdates(destWorkspaceName, taxonomyID, false ,statement);
-//
-//			}
-//			else {				
-//				Workbench.getInstance().error("There was an error when trying to import "+ destWorkspaceName +"!!");
-//				File folderDelete = new File(unzippedPath);
-//				org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
-//				success = false;
-//			}
-//		} catch (Exception e) {
-//			Workbench.getInstance().error("There was an error when trying to import "+ destWorkspaceName +"!!");
-//			e.printStackTrace();
-//			File folderDelete = new File(unzippedPath);
-//			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
-//			success = false;
-//			
-//		}
-//	}
-
 	private void importMySQLToMySQL() throws Exception {
 		
 		Map<String, String> credentials = LoadFromConf.loadDatabaseCredentials(FileUtils.getConfFolderPath());
@@ -198,29 +138,17 @@ public class RestoreDatabase {
 			port = credentials.get("port");
 		}
 		
-		long startTime = System.currentTimeMillis();
-		
 		DatabaseSchemas schemas = new DatabaseSchemas(username, password, host, port, dbType);
 
 		String filePath=importWS+"backup.sql";
 		
 		try {
 			logger.info("Starting the MySQL workspace " + workspaceName + " import...");
-			
-			long taxonomyID = Long.parseLong(taxId);
-
-			DatabaseAccess dbAccess = this.project.getDatabase().getDatabaseAccess(); 
-			
-			Connection connection = new Connection(dbAccess);
-			
-			Statement statement = connection.createStatement();
-			
 
 			if(schemas.cleanSchema(destWorkspaceName, filePath)) {
 				
 				MerlinUtils.updateAllViews(destWorkspaceName);
 
-				Update.checkForUpdates(destWorkspaceName, taxonomyID, false ,statement);
 			}
 			else {				
 				Workbench.getInstance().error("There was an error when trying to format "+ destWorkspaceName +"!!");
@@ -288,8 +216,6 @@ public class RestoreDatabase {
 		else {
 			try {
 				zipPath = directory.getPath();
-				fileName = directory.getName();
-				
 				LocalDateTime currentTime = LocalDateTime.now();
 		        
 		        fileDate = currentTime.getHour() + "h" + currentTime.getMinute() + "m" + currentTime.getSecond() + "s"
@@ -382,9 +308,6 @@ public class RestoreDatabase {
 			File copy = new File(cpy);
 			String pst = FileUtils.getHomeFolderPath().concat("ws").concat("/").concat(destWorkspaceName).concat("/");
 			File paste = new File(pst);
-			
-			List<String> taxIdFolder = FileUtils.getFilesFromFolder(importWS.concat(workspaceName), false);
-			taxId = taxIdFolder.get(0);
 			
 			org.apache.commons.io.FileUtils.copyDirectory(copy, paste);
 			
