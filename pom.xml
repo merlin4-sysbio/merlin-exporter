@@ -20,7 +20,7 @@
  	    <repository>
 			<id>nexus</id>
 			<name>Nexus BioSystems Server</name>
-			<url>https://nexus.bio.di.uminho.pt/content/repositories/biosystems-snapshots</url>
+			<url>https://nexus.bio.di.uminho.pt/content/groups/public/</url>
 		</repository> 
   </repositories> 
 
@@ -39,7 +39,7 @@
 						</goals>
 						<configuration>
 							<!-- <outputDirectory>../merlin-core/plugins_bin/merlin-draft-reconstruction</outputDirectory> -->
-							<outputDirectory>../merlin-aibench/merlin/plugins_bin/merlin-exporter</outputDirectory>
+							<outputDirectory>../merlin-aibench/plugins_bin/merlin-exporter</outputDirectory>
 							<resources>
 								<resource>
 									<directory>target/classes</directory>
