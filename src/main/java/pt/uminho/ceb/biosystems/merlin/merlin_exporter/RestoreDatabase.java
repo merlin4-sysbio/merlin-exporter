@@ -76,9 +76,6 @@ public class RestoreDatabase implements PropertyChangeListener {
 			
 			workspaceName = importWorkspaceFolder();
 
-			if(destWorkspaceName==null || destWorkspaceName.isEmpty())
-				destWorkspaceName = workspaceName;
-
 			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).addPropertyChangeListener(this);
 			this.message = "loading data";
 			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).readxmldb(this.destPath.concat("/tables/"), this.cancel);
@@ -168,6 +165,9 @@ public class RestoreDatabase implements PropertyChangeListener {
 		}
 
 		try {
+			if(destWorkspaceName==null || destWorkspaceName.isEmpty())
+				destWorkspaceName = workspaceName;
+			
 			logger.info("Starting the ws folder files import...");
 			String cpy = importWS.concat(workspaceName).concat("/");
 			File copy = new File(cpy);
