@@ -14,6 +14,7 @@
 	 	<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+		<merlin.plugins.directory>${project.basedir}/../merlin-aibench/plugins</merlin.plugins.directory>
 	</properties>
 
 	<repositories>
@@ -26,6 +27,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-jar-plugin</artifactId>
+		      <version>2.3.1</version>
+		      <configuration>
+		        <outputDirectory>${merlin.plugins.directory}</outputDirectory>
+		      </configuration>
+		    </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
