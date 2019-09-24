@@ -3,8 +3,6 @@ package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;

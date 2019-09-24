@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +21,8 @@ import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.MerlinUtils;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
-import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseAccess;
-import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.DatabaseSchemas;
-import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.Enumerators.DatabaseType;
-import pt.uminho.ceb.biosystems.merlin.database.connector.datatypes.H2DatabaseAccess;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 /**
