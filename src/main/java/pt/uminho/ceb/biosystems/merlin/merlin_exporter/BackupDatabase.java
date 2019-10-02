@@ -3,7 +3,6 @@ package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +12,6 @@ import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
@@ -29,10 +27,7 @@ public class BackupDatabase {
 	private String databaseName;
 	private String initialPath;
 	private String name = "";
-	private WorkspaceAIB project = null;
 	private File directory;
-	private long taxID;
-	private Map<String, String> credentials = LoadFromConf.loadDatabaseCredentials(FileUtils.getConfFolderPath());
 	final static Logger logger = LoggerFactory.getLogger(BackupDatabase.class);
 
 	@Port(direction=Direction.INPUT, name="Select Workspace", validateMethod = "checkProject", order=1)
@@ -50,9 +45,7 @@ public class BackupDatabase {
 			throw new IllegalArgumentException("Please select a workspace.");
 		}
 		else {
-			this.databaseName = project.getDatabase().getDatabaseName();
-			this.taxID = project.getTaxonomyID();
-			this.project = project;
+			this.databaseName = project.getName();
 
 		} 
 	}
