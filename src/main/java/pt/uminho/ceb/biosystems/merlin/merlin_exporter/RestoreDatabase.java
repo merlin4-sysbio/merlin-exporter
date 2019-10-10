@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.LoadFromConf;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
@@ -50,8 +48,7 @@ public class RestoreDatabase implements PropertyChangeListener {
 
 	@Port(name="new workspace name",description="set a name for the workspace", advanced = true, validateMethod="checkName", direction=Direction.INPUT,order=1)
 	public void setProject(String name){
-
-		destWorkspaceName = name;
+		
 	}
 
 
@@ -85,9 +82,8 @@ public class RestoreDatabase implements PropertyChangeListener {
 
 			File folderDelete = new File(unzippedPath);
 			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
-
+			Workbench.getInstance().error(e);
 			e.printStackTrace();
-			throw new IllegalArgumentException("Error while importing.");
 		}
 
 		if(success) {
@@ -135,7 +131,7 @@ public class RestoreDatabase implements PropertyChangeListener {
 		}
 	}
 	
-	private String importWorkspaceFolder() throws IOException {
+	private String importWorkspaceFolder() throws Exception {
 
 		List <String> foldercontent = FileUtils.getFilesFromFolder(unzippedPath, false);
 		String folder = foldercontent.get(0);
@@ -152,57 +148,47 @@ public class RestoreDatabase implements PropertyChangeListener {
 		}
 
 		if(workspaceName.equals("")) {
-			success = false;
 			File folderDelete = new File(unzippedPath);
 			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
-			Workbench.getInstance().error("workspace folder not found");
+			throw new Exception("workspace folder not found");
 		}
 
-		try {
-			if(destWorkspaceName==null || destWorkspaceName.isEmpty())
-				destWorkspaceName = workspaceName;
-			
-			logger.info("Starting the ws folder files import...");
-			String cpy = importWS.concat(workspaceName).concat("/");
-			File copy = new File(cpy);
-			String pst = FileUtils.getWorkspacesFolderPath().concat(destWorkspaceName).concat("/");
-			File paste = new File(pst);
-
-			this.destPath = paste.getAbsolutePath();
-			
-			org.apache.commons.io.FileUtils.copyDirectory(copy, paste);
-
-		} catch (Exception e) {
-			success = false;
-			File folderDelete = new File(unzippedPath);
-			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
+		if(destWorkspaceName==null || destWorkspaceName.isEmpty()) {
+			checkName(workspaceName);
 		}
+		
+		logger.info("Starting the ws folder files import...");
+		String cpy = importWS.concat(workspaceName).concat("/");
+		File copy = new File(cpy);
+		String pst = FileUtils.getWorkspacesFolderPath().concat(destWorkspaceName).concat("/");
+		File paste = new File(pst);
+
+		this.destPath = paste.getAbsolutePath();
+		
+		org.apache.commons.io.FileUtils.copyDirectory(copy, paste);
+
+		File folderDelete = new File(unzippedPath);
+		org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
 
 		return workspaceName;
 	}
 
 
-	public void checkName(String name) {
-
-		if(name!=null && !name.isEmpty())
-			this.destWorkspaceName = name;
+	public void checkName(String name) throws Exception {
+		
+		if(name!=null && !name.isEmpty()) {
+			
+			List<String> databases = InitDataAccess.getInstance().getDatabasesAvailable();
+			
+			if(databases.contains(name))
+				throw new Exception("a database named '" + name + "' already exists, please select a different name!");
+			else
+				this.destWorkspaceName = name;
+		}
+		else
+			this.destWorkspaceName = null;
 	}
 
-	private Boolean validateDefaultCredentials() {
-		String username = null, password = null, host = null, port = null;
-
-		Map<String, String> credentials = LoadFromConf.loadDatabaseCredentials(FileUtils.getConfFolderPath());
-
-		username = credentials.get("username");
-		password = credentials.get("password");
-		host = credentials.get("host");
-		port = credentials.get("port");
-
-		Boolean validCredentials = !(username.equals("your_username") && password.equals("your_password") && host.equals("your_ip_address") && port.equals("3306"));
-
-		return validCredentials;
-
-	}
 
 	/**
 	 * @return
