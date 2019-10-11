@@ -1,27 +1,30 @@
 package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import es.uvigo.ei.aibench.core.operation.annotation.Cancel;
 import es.uvigo.ei.aibench.core.operation.annotation.Direction;
 import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
+import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
+import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
+import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
-
-/**
- * @author claudia
- *
- */
 @Operation(name="export workspace", description="Make a workspace backup.")
-public class BackupDatabase {
+public class BackupDatabase implements PropertyChangeListener  {
 	
 	
 	private String databaseName;
@@ -29,6 +32,11 @@ public class BackupDatabase {
 	private String name = "";
 	private File directory;
 	final static Logger logger = LoggerFactory.getLogger(BackupDatabase.class);
+	private long startTime;
+	private String message;
+	private int dataSize;
+	public TimeLeftProgress progress = new TimeLeftProgress();
+	private AtomicBoolean cancel = new AtomicBoolean(false);
 
 	@Port(direction=Direction.INPUT, name="Select Workspace", validateMethod = "checkProject", order=1)
 	public void setProject(WorkspaceAIB project) {
@@ -58,6 +66,9 @@ public class BackupDatabase {
 	public void selectDirectory(File directory){
 
 		try {
+			this.startTime = GregorianCalendar.getInstance().getTimeInMillis();
+			this.cancel = new AtomicBoolean(false);
+			
 			backupWorkspaceFolder();
 			
 			String backupXmlTables = this.directory.getAbsolutePath().concat("/"+this.databaseName).concat("/tables/");
@@ -66,6 +77,11 @@ public class BackupDatabase {
 			
 			if(!newFile.exists())
 				newFile.mkdirs();
+			
+			this.message = "exporting data...";
+			logger.info(this.message);
+			
+			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).addPropertyChangeListener(this);
 			
 			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).dbtoXML(backupXmlTables);
 			
@@ -151,6 +167,53 @@ public class BackupDatabase {
 				throw new IllegalArgumentException("Please select a directory!");
 			}
 
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	@Cancel
+	public void cancel() {
+
+		String[] options = new String[2];
+		options[0]="yes";
+		options[1]="no";
+
+		int result=CustomGUI.stopQuestion("cancel confirmation", "are you sure you want to cancel the operation?", options);
+
+		if(result==0) {
+			
+			progress.setTime((GregorianCalendar.getInstance().getTimeInMillis()-GregorianCalendar.getInstance().getTimeInMillis()),1,1);
+			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).setCancel(true);
+			logger.warn("export workspace operation canceled!");
+			Workbench.getInstance().warn("Please hold on. Your operation is being cancelled.");
+		}
+	}
+	
+	/**
+	 * @return
+	 */
+	@Progress(progressDialogTitle = "export workspace", modal = false, workingLabel = "exporting workspace", preferredWidth = 400, preferredHeight=300)
+	public TimeLeftProgress getProgress() {
+
+		return progress;
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		
+		if(evt.getPropertyName().equalsIgnoreCase("message"))
+			this.message = (String) evt.getNewValue();
+		
+		if(evt.getPropertyName().equalsIgnoreCase("size")) {
+			this.dataSize = (int) evt.getNewValue();
+		}
+		
+		if(evt.getPropertyName().equalsIgnoreCase("tablesCounter")) {
+						
+			int tablesCounter = (int) evt.getNewValue();
+			this.progress.setTime((GregorianCalendar.getInstance().getTimeInMillis() - startTime), tablesCounter, dataSize, this.message);
 		}
 	}
 }

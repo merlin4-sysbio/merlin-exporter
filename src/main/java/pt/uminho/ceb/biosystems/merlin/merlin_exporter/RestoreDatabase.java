@@ -14,19 +14,16 @@ import org.slf4j.LoggerFactory;
 
 import es.uvigo.ei.aibench.core.Core;
 import es.uvigo.ei.aibench.core.operation.OperationDefinition;
+import es.uvigo.ei.aibench.core.operation.annotation.Cancel;
 import es.uvigo.ei.aibench.core.operation.annotation.Direction;
 import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
+import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
-
-/**
- * @author claudia
- *
- */
 
 @Operation(name="import workspace", description="Import the workspace backup.")
 public class RestoreDatabase implements PropertyChangeListener {
@@ -59,6 +56,9 @@ public class RestoreDatabase implements PropertyChangeListener {
 	@Port(direction=Direction.INPUT, name="folder",description="workspace folder",validateMethod="checkDirectory",order=3)
 	public void selectDirectory(File directory) throws IOException{
 		try {
+			this.startTime = GregorianCalendar.getInstance().getTimeInMillis();
+			this.cancel = new AtomicBoolean(false);
+			
 			//			unzippedPath = FileUtils.getHomeFolderPath().concat("ws").concat("/").concat(destWorkspaceName).concat("/");
 			unzippedPath = FileUtils.getHomeFolderPath().concat("temp").concat("/").concat("importWorkspaceTemp").concat("/");
 
@@ -188,12 +188,32 @@ public class RestoreDatabase implements PropertyChangeListener {
 		else
 			this.destWorkspaceName = null;
 	}
+	
+	/**
+	 * 
+	 */
+	@Cancel
+	public void cancel() {
 
+		String[] options = new String[2];
+		options[0]="yes";
+		options[1]="no";
+
+		int result=CustomGUI.stopQuestion("cancel confirmation", "are you sure you want to cancel the operation?", options);
+
+		if(result==0) {
+			
+			progress.setTime((GregorianCalendar.getInstance().getTimeInMillis()-GregorianCalendar.getInstance().getTimeInMillis()),1,1);
+			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).setCancel(true);
+			logger.warn("export workspace operation canceled!");
+			Workbench.getInstance().warn("Please hold on. Your operation is being cancelled.");
+		}
+	}
 
 	/**
 	 * @return
 	 */
-	@Progress
+	@Progress(progressDialogTitle = "import workspace", modal = false, workingLabel = "importing workspace", preferredWidth = 400, preferredHeight=300)
 	public TimeLeftProgress getProgress() {
 
 		return progress;
