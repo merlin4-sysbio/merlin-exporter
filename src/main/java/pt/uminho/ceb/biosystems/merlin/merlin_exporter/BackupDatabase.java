@@ -36,7 +36,6 @@ public class BackupDatabase implements PropertyChangeListener  {
 	private String message;
 	private int dataSize;
 	public TimeLeftProgress progress = new TimeLeftProgress();
-	private AtomicBoolean cancel = new AtomicBoolean(false);
 
 	@Port(direction=Direction.INPUT, name="Select Workspace", validateMethod = "checkProject", order=1)
 	public void setProject(WorkspaceAIB project) {
@@ -67,7 +66,6 @@ public class BackupDatabase implements PropertyChangeListener  {
 
 		try {
 			this.startTime = GregorianCalendar.getInstance().getTimeInMillis();
-			this.cancel = new AtomicBoolean(false);
 			
 			backupWorkspaceFolder();
 			
