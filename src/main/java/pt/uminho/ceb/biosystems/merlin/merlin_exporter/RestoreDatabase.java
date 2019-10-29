@@ -23,6 +23,7 @@ import es.uvigo.ei.aibench.workbench.Workbench;
 import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
+import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 @Operation(name="import workspace", description="Import the workspace backup.")
@@ -67,11 +68,9 @@ public class RestoreDatabase implements PropertyChangeListener {
 			
 			workspaceName = importWorkspaceFolder();
 
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).addPropertyChangeListener(this);
 			this.message = "loading data";
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).readxmldb(this.destPath.concat("/tables/"), this.cancel);
 			
-			InitDataAccess.getInstance().dropExporterConnection(this.destWorkspaceName);
+			DatabaseServices.readxmldb(this.destWorkspaceName, this.destPath.concat("/tables/"), this.cancel, this);
 			
 			File folderDelete = new File(unzippedPath);
 			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
@@ -178,7 +177,7 @@ public class RestoreDatabase implements PropertyChangeListener {
 		
 		if(name!=null && !name.isEmpty()) {
 			
-			List<String> databases = InitDataAccess.getInstance().getDatabasesAvailable();
+			List<String> databases = DatabaseServices.getDatabasesAvailable();
 			
 			if(databases.contains(name))
 				throw new Exception("a database named '" + name + "' already exists, please select a different name!");
@@ -204,7 +203,7 @@ public class RestoreDatabase implements PropertyChangeListener {
 		if(result==0) {
 			
 			progress.setTime((GregorianCalendar.getInstance().getTimeInMillis()-GregorianCalendar.getInstance().getTimeInMillis()),1,1);
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.destWorkspaceName).setCancel(true);
+			DatabaseServices.setCancelExporterBatch(this.destWorkspaceName, true);
 			logger.warn("export workspace operation canceled!");
 			Workbench.getInstance().warn("Please hold on. Your operation is being cancelled.");
 		}

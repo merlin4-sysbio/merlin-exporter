@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.GregorianCalendar;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
 import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
 import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
+import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
 @Operation(name="export workspace", description="Make a workspace backup.")
@@ -79,11 +79,7 @@ public class BackupDatabase implements PropertyChangeListener  {
 			this.message = "exporting data...";
 			logger.info(this.message);
 			
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).addPropertyChangeListener(this);
-			
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).dbtoXML(backupXmlTables);
-			
-			InitDataAccess.getInstance().dropExporterConnection(this.databaseName);
+			DatabaseServices.databaseToXML(this.databaseName, backupXmlTables, this);
 			
 			zipBackupFiles();
 			Workbench.getInstance().info("Workspace successfully exported as " + name + ".");
@@ -183,7 +179,7 @@ public class BackupDatabase implements PropertyChangeListener  {
 		if(result==0) {
 			
 			progress.setTime((GregorianCalendar.getInstance().getTimeInMillis()-GregorianCalendar.getInstance().getTimeInMillis()),1,1);
-			InitDataAccess.getInstance().getDatabaseExporterBatchService(this.databaseName).setCancel(true);
+			DatabaseServices.setCancelExporterBatch(this.databaseName, true);
 			logger.warn("export workspace operation canceled!");
 			Workbench.getInstance().warn("Please hold on. Your operation is being cancelled.");
 		}
