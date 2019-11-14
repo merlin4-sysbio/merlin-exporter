@@ -1,4 +1,4 @@
-package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
+package pt.uminho.ceb.biosystems.merlin.merlin_exporter.workspace;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

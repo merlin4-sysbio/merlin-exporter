@@ -1,4 +1,4 @@
-package pt.uminho.ceb.biosystems.merlin.merlin_exporter;
+package pt.uminho.ceb.biosystems.merlin.merlin_exporter.workspace;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -119,14 +119,14 @@ public class BackupDatabase implements PropertyChangeListener  {
 		
 		logger.info("Copying workspace folder files...");
 		String path;
-		String destiny;
+		String destination;
 		
 		path = FileUtils.getWorkspaceFolderPath(databaseName);
-		destiny = this.directory+"/"+databaseName;
+		destination = this.directory+"/"+databaseName;
 		new File(this.directory+"/"+databaseName).mkdirs();
 		
 		File p = new File(path);
-		File d = new File(destiny);
+		File d = new File(destination);
 		
 		org.apache.commons.io.FileUtils.copyDirectory(p, d);
 			
