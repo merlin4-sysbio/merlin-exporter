@@ -29,7 +29,7 @@ import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.services.ProjectServices;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 
-@Operation(name="Merge Compartments", description = "Merge Compartments")
+@Operation(name="Merge Compartments", description = "Make a copy of a workspace")
 public class CloneWorkspace implements PropertyChangeListener  {
 
 	private String newWorkspaceName;
