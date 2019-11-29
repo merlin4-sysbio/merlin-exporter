@@ -41,15 +41,19 @@ public class RestoreDatabase implements PropertyChangeListener {
 	private int dataSize;
 	public TimeLeftProgress progress = new TimeLeftProgress();
 	private AtomicBoolean cancel = new AtomicBoolean(false);
+	private Boolean override = false;
 
 	final static Logger logger = LoggerFactory.getLogger(RestoreDatabase.class);
+	
+	@Port(direction=Direction.INPUT, name="force database creation", validateMethod="checkIfOverride", description="this command forces merlin to create a database with the seleted name. If a database with such name already exists, it will be replaced",
+			advanced = true, defaultValue = "false", order=1)
+	public void setOldWorkspaceName(boolean override) {}
 
-	@Port(name="new workspace name",description="set a name for the workspace", advanced = true, validateMethod="checkName", direction=Direction.INPUT,order=1)
+	@Port(name="new workspace name",description="set a name for the workspace", advanced = true, validateMethod="checkName", direction=Direction.INPUT,order=2)
 	public void setProject(String name){
 		
 	}
-
-
+	
 	/**
 	 * @param directory
 	 * @throws IOException 
@@ -70,11 +74,17 @@ public class RestoreDatabase implements PropertyChangeListener {
 
 			this.message = "loading data";
 			
+			DatabaseServices.generateDatabase(this.destWorkspaceName);
+			DatabaseServices.dropConnection(this.destWorkspaceName);
+			
 			DatabaseServices.readxmldb(this.destWorkspaceName, this.destPath.concat("/tables/"), this.cancel, this);
 			
 			File folderDelete = new File(unzippedPath);
 			org.apache.commons.io.FileUtils.deleteDirectory(folderDelete);
 			
+			File tablesWorkspace = new File(FileUtils.getWorkspacesFolderPath().concat(this.destWorkspaceName).concat("/tables"));
+			if(tablesWorkspace.exists())
+				org.apache.commons.io.FileUtils.deleteDirectory(tablesWorkspace);
 
 		} catch (Exception e) {
 			success = false;
@@ -171,6 +181,10 @@ public class RestoreDatabase implements PropertyChangeListener {
 
 		return workspaceName;
 	}
+	
+	public void checkIfOverride(boolean override) {
+		this.override = override;
+	}
 
 
 	public void checkName(String name) throws Exception {
@@ -179,7 +193,7 @@ public class RestoreDatabase implements PropertyChangeListener {
 			
 			List<String> databases = DatabaseServices.getDatabasesAvailable();
 			
-			if(databases.contains(name))
+			if(databases.contains(name) && !this.override)
 				throw new Exception("a database named '" + name + "' already exists, please select a different name!");
 			else
 				this.destWorkspaceName = name;

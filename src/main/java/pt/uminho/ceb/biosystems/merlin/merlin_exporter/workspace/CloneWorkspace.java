@@ -94,7 +94,10 @@ public class CloneWorkspace implements PropertyChangeListener  {
 
 				importWorkspaceFolder();
 
-				this.message = "loading data";
+				this.message = "loading data";		
+				
+				DatabaseServices.generateDatabase(this.newWorkspaceName);
+				DatabaseServices.dropConnection(this.newWorkspaceName);
 
 				DatabaseServices.readxmldb(this.newWorkspaceName, tempFile.getAbsolutePath().concat("/"), this.cancel, this);
 
