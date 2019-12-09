@@ -20,9 +20,8 @@ import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
-import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
-import pt.uminho.ceb.biosystems.merlin.dataAccess.InitDataAccess;
+import pt.uminho.ceb.biosystems.merlin.gui.jpanels.CustomGUI;
+import pt.uminho.ceb.biosystems.merlin.gui.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
 

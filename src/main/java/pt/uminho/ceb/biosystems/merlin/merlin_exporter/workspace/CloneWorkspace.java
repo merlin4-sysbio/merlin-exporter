@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -21,10 +20,9 @@ import es.uvigo.ei.aibench.core.operation.annotation.Operation;
 import es.uvigo.ei.aibench.core.operation.annotation.Port;
 import es.uvigo.ei.aibench.core.operation.annotation.Progress;
 import es.uvigo.ei.aibench.workbench.Workbench;
-import pt.uminho.ceb.biosystems.merlin.aibench.datatypes.WorkspaceAIB;
-import pt.uminho.ceb.biosystems.merlin.aibench.gui.CustomGUI;
-import pt.uminho.ceb.biosystems.merlin.aibench.utilities.TimeLeftProgress;
-import pt.uminho.ceb.biosystems.merlin.core.datatypes.Workspace;
+import pt.uminho.ceb.biosystems.merlin.gui.datatypes.WorkspaceAIB;
+import pt.uminho.ceb.biosystems.merlin.gui.jpanels.CustomGUI;
+import pt.uminho.ceb.biosystems.merlin.gui.utilities.TimeLeftProgress;
 import pt.uminho.ceb.biosystems.merlin.services.DatabaseServices;
 import pt.uminho.ceb.biosystems.merlin.services.ProjectServices;
 import pt.uminho.ceb.biosystems.merlin.utilities.io.FileUtils;
@@ -36,7 +34,6 @@ public class CloneWorkspace implements PropertyChangeListener  {
 	private String directory;
 	private WorkspaceAIB workspace;
 	private Integer dataSize = 1;
-	private String destPath;
 	private long startTime;
 	private String message;
 	private TimeLeftProgress progress = new TimeLeftProgress();
@@ -198,12 +195,8 @@ public class CloneWorkspace implements PropertyChangeListener  {
 		if(paste.exists())
 			org.apache.commons.io.FileUtils.deleteDirectory(paste);
 
-		this.destPath = paste.getAbsolutePath();
-
 		pst = pst.concat("/").concat(folder);
 		paste = new File(pst);
-
-
 
 		org.apache.commons.io.FileUtils.copyDirectory(copy, paste);
 
