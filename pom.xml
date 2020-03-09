@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>pt.uminho.ceb.biosystems.merlin</groupId>
+  <artifactId>merlin-exporter</artifactId>
+  <version>4.0.3-RELEASE</version>
+
+<packaging>jar</packaging>
+
+	<name>merlin-exporter</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	 	<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+		<pt.uminho.ceb.biosystems.merlin.version>4.0.3-RELEASE</pt.uminho.ceb.biosystems.merlin.version>
+		<pt.uminho.ceb.biosystems.merlin.groupId>pt.uminho.ceb.biosystems.merlin</pt.uminho.ceb.biosystems.merlin.groupId>
+		<merlin.plugins.directory>${project.basedir}/../merlin-project/merlin-gui/plugins</merlin.plugins.directory>
+		<merlin.plugins_bin.directory>${project.basedir}/../merlin-project/merlin-gui/plugins_bin/merlin-exporter</merlin.plugins_bin.directory>
+		<merlin.build.directory>${project.basedir}/../merlin-project/merlin-gui</merlin.build.directory>
+	</properties>
+
+	<repositories>
+ 	    <repository>
+			<id>nexus</id>
+			<name>Nexus BioSystems Server</name>
+			<url>https://nexus.bio.di.uminho.pt/content/groups/public/</url>
+		</repository> 
+  </repositories> 
+
+	<build>
+		<plugins>
+			<plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-jar-plugin</artifactId>
+		      <version>2.3.1</version>
+		      <configuration>
+		        <outputDirectory>${merlin.plugins.directory}</outputDirectory>
+		      </configuration>
+		    </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<id>merlin-reconstruction</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<!-- <outputDirectory>../merlin-core/plugins_bin/merlin-draft-reconstruction</outputDirectory> -->
+							<outputDirectory>${merlin.plugins_bin.directory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>target/classes</directory>
+									<filtering>false</filtering>
+								</resource>
+								<resource>
+									<directory>src/main/resources</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<stripVersion>true</stripVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>list-dependencies</id>
+						<phase>install</phase>
+						<goals>
+							<goal>list</goal>
+						</goals>
+						<configuration>
+							<outputFile>${merlin.build.directory}/conf/dependenciesfiles</outputFile>
+							<outputScope>false</outputScope>
+							<appendOutput>true</appendOutput>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
+			<artifactId>merlin-gui</artifactId>
+			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
+		</dependency>
+	</dependencies>
+	
+		<distributionManagement>
+		<snapshotRepository>
+			<id>biosystems-snapshots</id>
+			<url>https://nexus.bio.di.uminho.pt/content/repositories/biosystems-snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>biosystems-releases</id>
+			<url>https://nexus.bio.di.uminho.pt/content/repositories/biosystems-releases</url>
+		</repository>
+	</distributionManagement>
+
+
+</project>

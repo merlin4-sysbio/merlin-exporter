@@ -1,0 +1,53 @@
+<plugin start="true">
+	<uid>pt.uminho.ceb.biosystems.merlin.exporter</uid>
+	<name>merlin-exporter</name>
+	<version>4.0.3</version>
+
+	<dependencies>
+		<dependency uid="merlin" />
+	</dependencies>
+
+	<extensions>
+	
+		<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+		
+		<extension uid="aibench.core" name="aibench.core.operation-definition"
+			class="pt.uminho.ceb.biosystems.merlin.merlin_exporter.workspace.BackupDatabase">
+			<operation-description name="workspace"
+				path="30@workspace/30@export/" uid="operations.BackupDatabase.ID" />
+		</extension>
+
+		<extension uid="aibench.workbench" name="aibench.workbench.view">
+			<icon-operation operation="operations.BackupDatabase.ID"
+				icon="icons/Lifecycle/export.png" />
+		</extension>
+		
+		<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+		
+		<extension uid="aibench.core" name="aibench.core.operation-definition"
+			class="pt.uminho.ceb.biosystems.merlin.merlin_exporter.workspace.RestoreDatabase">
+			<operation-description name="workspace"
+				path="20@workspace/30@import/" uid="operations.RestoreDatabase.ID" />
+		</extension>
+
+		<extension uid="aibench.workbench" name="aibench.workbench.view">
+			<icon-operation operation="operations.RestoreDatabase.ID"
+				icon="icons/Lifecycle/upload.png" />
+		</extension>
+		
+		<!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+		
+		<extension uid="aibench.core" name="aibench.core.operation-definition"
+			class="pt.uminho.ceb.biosystems.merlin.merlin_exporter.workspace.CloneWorkspace">
+			<operation-description name="clone workspace"
+				path="45@workspace" uid="operations.CloneWorkspace.ID" />
+		</extension>
+
+		<extension uid="aibench.workbench" name="aibench.workbench.view">
+			<icon-operation operation="operations.CloneWorkspace.ID"
+				icon="icons/Lifecycle/clone_workspace.png" />
+		</extension>
+		
+	</extensions>
+
+</plugin>
